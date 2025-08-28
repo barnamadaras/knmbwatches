@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import WatchCard from '../components/WatchCard.astro';
+import { getCollection } from "astro:content";
+
+const watches = await getCollection("watches");
+const sorted = watches.sort((a, b) => a.data.status.localeCompare(b.data.status));
+const brands = Array.from(new Set(sorted.map(w => w.data.brand))).sort();
+---
+<Layout title="Watches — KNMB Watches">
+  <h1 class="mb-6 text-3xl font-bold">Watches</h1>
+
+  <div id="brand-filter" class="mb-6 flex flex-wrap gap-2">
+    <button data-brand="all" class="rounded-full border px-3 py-1 text-sm">Mind</button>
+    {brands.map(b => (
+      <button data-brand={b} class="rounded-full border px-3 py-1 text-sm">{b}</button>
+    ))}
+  </div>
+
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {sorted.map((entry) => <WatchCard entry={entry} />)}
+  </section>
+
+  <script>
+    const buttons = document.querySelectorAll('#brand-filter button');
+    const cards = document.querySelectorAll('[data-brand]');
+    buttons.forEach(b => b.addEventListener('click', () => {
+      const brand = b.dataset.brand;
+      cards.forEach(c => {
+        c.style.display = (brand === 'all' || c.dataset.brand === brand) ? '' : 'none';
+      });
+      buttons.forEach(x => x.classList.remove('bg-black','text-white'));
+      b.classList.add('bg-black','text-white');
+    }));
+  </script>
+</Layout>

@@ -1,0 +1,20 @@
+---
+const { entry } = Astro.props;
+const data = entry.data;
+const sold = data.status === "sold";
+---
+<article class={`group relative rounded-2xl bg-white p-4 shadow-md transition hover:shadow-lg ${sold ? "opacity-60" : ""}`} data-brand={data.brand}>
+  {sold && (
+    <span class="absolute right-3 top-3 rounded-full bg-red-600 px-2 py-1 text-xs font-medium text-white">Sold</span>
+  )}
+  <div class="overflow-hidden rounded-xl">
+    <img src={(data.images && data.images[0]) || "/favicon.png"} alt={data.title} class="h-56 w-full object-cover transition duration-300 group-hover:scale-[1.02]" />
+  </div>
+  <div class="mt-4 space-y-1">
+    <h3 class="text-lg font-semibold">{data.title}</h3>
+    <p class="text-sm text-gray-600">{data.brand}{data.reference ? ` · Ref. ${data.reference}` : ""}{data.year ? ` · ${data.year}` : ""}</p>
+    {data.status === "available" && data.price_huf && (
+      <p class="pt-2 text-base font-semibold text-gray-900">{new Intl.NumberFormat("hu-HU").format(data.price_huf)} Ft</p>
+    )}
+  </div>
+</article>
